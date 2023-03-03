@@ -9,6 +9,7 @@ import Foundation
 
 final class Day1: Day {
     func run(input: String) -> String {
-        return ""
+        let circle = input.map { $0 } + [input.last!]
+        return circle.adjacentPairs().map { $0.0 == $0.1 ? $0.0.wholeNumberValue! : 0 }.sum.description
     }
 }
