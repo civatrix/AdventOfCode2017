@@ -9,6 +9,10 @@ import Foundation
 
 final class Day2: Day {
     func run(input: String) -> String {
-        return ""
+        return input.lines
+            .map { $0.allDigits }
+            .map { $0.max()! - $0.min()! }
+            .sum
+            .description
     }
 }
