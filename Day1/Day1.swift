@@ -9,7 +9,8 @@ import Foundation
 
 final class Day1: Day {
     func run(input: String) -> String {
-        let circle = input.map { $0 } + [input.last!]
-        return circle.adjacentPairs().map { $0.0 == $0.1 ? $0.0.wholeNumberValue! : 0 }.sum.description
+        let circle = input.map { $0 }
+        let radii = circle.count / 2
+        return (0 ..< radii).map { circle[$0] == circle[$0 + radii] ? circle[$0].wholeNumberValue! * 2 : 0 }.sum.description
     }
 }

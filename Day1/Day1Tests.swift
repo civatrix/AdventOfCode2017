@@ -13,15 +13,15 @@ final class Day1Tests: XCTestCase {
     func testDay() throws {
         let input =
 """
-1122
+1212
 """
-        XCTAssertEqual(day.run(input: input), "3")
+        XCTAssertEqual(day.run(input: input), "6")
     }
     
     func testDay2() throws {
         let input =
 """
-1111
+123425
 """
         XCTAssertEqual(day.run(input: input), "4")
     }
@@ -29,7 +29,7 @@ final class Day1Tests: XCTestCase {
     func testDay3() throws {
         let input =
 """
-1234
+1221
 """
         XCTAssertEqual(day.run(input: input), "0")
     }
@@ -37,8 +37,16 @@ final class Day1Tests: XCTestCase {
     func testDay4() throws {
         let input =
 """
-91212129
+123123
 """
-        XCTAssertEqual(day.run(input: input), "9")
+        XCTAssertEqual(day.run(input: input), "12")
+    }
+    
+    func testDay5() throws {
+        let input =
+"""
+12131415
+"""
+        XCTAssertEqual(day.run(input: input), "4")
     }
 }
