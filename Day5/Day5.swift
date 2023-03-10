@@ -14,8 +14,9 @@ final class Day5: Day {
         
         var steps = 0
         while index < jumps.count || index < 0 {
-            jumps[index] += 1
-            index += jumps[index] - 1
+            let previousIndex = index
+            index += jumps[index]
+            jumps[previousIndex] += jumps[previousIndex] >= 3 ? -1 : 1
             steps += 1
         }
         
