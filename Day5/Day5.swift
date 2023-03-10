@@ -9,6 +9,16 @@ import Foundation
 
 final class Day5: Day {
     func run(input: String) -> String {
-        return ""
+        var jumps = input.allDigits
+        var index = 0
+        
+        var steps = 0
+        while index < jumps.count || index < 0 {
+            jumps[index] += 1
+            index += jumps[index] - 1
+            steps += 1
+        }
+        
+        return steps.description
     }
 }
