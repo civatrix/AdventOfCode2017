@@ -10,11 +10,11 @@ import Foundation
 final class Day6: Day {
     func run(input: String) -> String {
         var blocks = input.allDigits
-        var seen = Set<[Int]>()
+        var seen = [[Int]]()
         
         var redistribution = 0
         while !seen.contains(blocks) {
-            seen.insert(blocks)
+            seen.append(blocks)
             var largest = blocks.max()!
             let largestIndex = blocks.firstIndex(of: largest)!
             
@@ -29,6 +29,6 @@ final class Day6: Day {
             redistribution += 1
         }
         
-        return redistribution.description
+        return (redistribution - seen.firstIndex(of: blocks)!).description
     }
 }
