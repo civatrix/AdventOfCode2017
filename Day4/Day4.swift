@@ -9,6 +9,6 @@ import Foundation
 
 final class Day4: Day {
     func run(input: String) -> String {
-        return ""
+        input.lines.filter { Set($0.split(separator: " ")).count == $0.split(separator: " ").count }.count.description
     }
 }
