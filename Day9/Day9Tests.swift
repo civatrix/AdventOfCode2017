@@ -13,64 +13,56 @@ final class Day9Tests: XCTestCase {
     func testDay1() throws {
         let input =
 """
-{}
+<>
 """
-        XCTAssertEqual(day.run(input: input), "1")
+        XCTAssertEqual(day.run(input: input), "0")
     }
     
     func testDay2() throws {
         let input =
 """
-{{{}}}
+<random characters>
 """
-        XCTAssertEqual(day.run(input: input), "6")
+        XCTAssertEqual(day.run(input: input), "17")
     }
     
     func testDay3() throws {
         let input =
 """
-{{},{}}
+<<<<>
 """
-        XCTAssertEqual(day.run(input: input), "5")
+        XCTAssertEqual(day.run(input: input), "3")
     }
     
     func testDay4() throws {
         let input =
 """
-{{{},{},{{}}}}
+<{!>}>
 """
-        XCTAssertEqual(day.run(input: input), "16")
+        XCTAssertEqual(day.run(input: input), "2")
     }
     
     func testDay5() throws {
         let input =
 """
-{<a>,<a>,<a>,<a>}
+<!!>
 """
-        XCTAssertEqual(day.run(input: input), "1")
+        XCTAssertEqual(day.run(input: input), "0")
     }
     
     func testDay6() throws {
         let input =
 """
-{{<ab>},{<ab>},{<ab>},{<ab>}}
+<!!!>>
 """
-        XCTAssertEqual(day.run(input: input), "9")
+        XCTAssertEqual(day.run(input: input), "0")
     }
     
     func testDay7() throws {
         let input =
 """
-{{<!!>},{<!!>},{<!!>},{<!!>}}
+<{o"i!a,<{i<a>
 """
-        XCTAssertEqual(day.run(input: input), "9")
-    }
-    
-    func testDay8() throws {
-        let input =
-"""
-{{<a!>},{<a!>},{<a!>},{<ab>}}
-"""
-        XCTAssertEqual(day.run(input: input), "3")
+        XCTAssertEqual(day.run(input: input), "10")
     }
 }

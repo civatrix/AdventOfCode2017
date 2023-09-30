@@ -13,21 +13,16 @@ final class Day9: Day {
         
         var isGarbage = false
         var skipNext = false
-        var depth = 0
         for character in input {
             if skipNext {
                 skipNext = false
                 continue
             }
             if isGarbage && (character != ">" && character != "!") {
+                score += 1
                 continue
             }
             switch character {
-            case "{":
-                depth += 1
-            case "}":
-                score += depth
-                depth -= 1
             case "<":
                 isGarbage = true
             case ">":
