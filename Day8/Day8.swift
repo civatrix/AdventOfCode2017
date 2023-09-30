@@ -10,6 +10,7 @@ import Foundation
 final class Day8: Day {
     func run(input: String) -> String {
         var registers = [Substring: Int]()
+        var maxValue = Int.min
         
         for line in input.lines {
             let words = line.split(separator: " ")
@@ -38,8 +39,9 @@ final class Day8: Day {
             guard passed else { continue }
             let sign = (words[1] == "inc") ? 1 : -1
             registers[words[0], default: 0] += sign * Int(words[2])!
+            maxValue = max(registers.values.max()!, maxValue)
         }
         
-        return registers.values.max()!.description
+        return maxValue.description
     }
 }
