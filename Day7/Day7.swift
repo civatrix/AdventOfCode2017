@@ -8,8 +8,12 @@
 import Foundation
 import RegexBuilder
 
-final class Day7: Day {
-    func run(input: String) -> String {
+struct Platter {
+    let name: Substring
+    let weight: Int
+    let children: [Substring]
+    
+    init(line: String) {
         let name = Reference<Substring>()
         let weight = Reference<Int>()
         let regex = Regex {
@@ -23,14 +27,44 @@ final class Day7: Day {
             }
         }
         
-        var heads = Set<Substring>()
-        var tails = Set<Substring>()
-        for line in input.lines {
-            let match = line.wholeMatch(of: regex)!
-            heads.insert(match[name])
-            tails.formUnion(match.output.3 ?? [])
+        let match = line.wholeMatch(of: regex)!
+        self.name = match[name]
+        self.weight = match[weight]
+        self.children = match.output.3 ?? []
+    }
+    
+    func totalWeight(_ directory: [Substring: Platter]) -> Int {
+        return weight + children.map { directory[$0]!.totalWeight(directory) }.sum
+    }
+}
+
+final class Day7: Day {
+    func run(input: String) -> String {
+        let platters = input.lines.map(Platter.init(line:))
+        let directory = Dictionary(uniqueKeysWithValues: platters.map { ($0.name, $0) })
+        
+        let heads = Set(platters.map { $0.name })
+        let tails = Set(platters.flatMap { $0.children })
+        let root = directory[heads.subtracting(tails).first!]!
+        return process(root: root, directory)!.description
+    }
+    
+    func process(root: Platter, _ directory: [Substring: Platter]) -> Int? {
+        let rootWeights = root.children.map { directory[$0]!.totalWeight(directory) }
+        let weightCounts = rootWeights.reduce(into: [Int: Int]()) { $0[$1, default: 0] += 1 }
+        let brokenIndex: Int
+        let correctIndex: Int
+        if let firstWrong = weightCounts.first(where: { $0.value == 1 })?.key {
+            brokenIndex = rootWeights.firstIndex(of: firstWrong)!
+            correctIndex = brokenIndex == 0 ? 1 : 0
+        } else {
+            return nil
         }
         
-        return String(heads.subtracting(tails).first!)
+        if let answer = process(root: directory[root.children[brokenIndex]]!, directory) {
+            return answer
+        } else {
+            return directory[root.children[brokenIndex]]!.weight - abs(rootWeights[correctIndex] - rootWeights[brokenIndex])
+        }
     }
 }

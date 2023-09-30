@@ -27,6 +27,6 @@ ugml (68) -> gyxo, ebii, jptl
 gyxo (61)
 cntj (57)
 """
-        XCTAssertEqual(day.run(input: input), "tknk")
+        XCTAssertEqual(day.run(input: input), "60")
     }
 }
