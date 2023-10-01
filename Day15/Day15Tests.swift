@@ -16,6 +16,6 @@ final class Day15Tests: XCTestCase {
 Generator A starts with 65
 Generator B starts with 8921
 """
-        XCTAssertEqual(day.run(input: input), "588")
+        XCTAssertEqual(day.run(input: input), "309")
     }
 }

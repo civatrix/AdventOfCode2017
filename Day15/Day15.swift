@@ -16,9 +16,14 @@ final class Day15: Day {
         var b = start[1]
         
         var matches = 0
-        for _ in 0 ..< 40_000_000 {
-            a = (a * 16807) % 2147483647
-            b = (b * 48271) % 2147483647
+        for _ in 0 ..< 5_000_000 {
+            repeat {
+                a = (a * 16807) % 2147483647
+            } while !a.isMultiple(of: 4)
+            
+            repeat {
+                b = (b * 48271) % 2147483647
+            } while !b.isMultiple(of: 8)
             
             if (a & mask) == (b & mask) {
                 matches += 1
