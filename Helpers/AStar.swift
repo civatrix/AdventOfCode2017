@@ -29,6 +29,10 @@ struct HexPoint: Hashable {
         lhs = lhs + rhs
     }
     
+    static func distance(between to: HexPoint, and from: HexPoint) -> Int {
+        from.distance(to: to)
+    }
+    
     static let zero = HexPoint(q: 0, r: 0, s: 0)
     static let n = HexPoint(q: 0, r: -1, s: 1)
     static let s = HexPoint(q: 0, r: 1, s: -1)

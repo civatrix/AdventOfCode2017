@@ -9,7 +9,7 @@ import Foundation
 
 final class Day11: Day {
     func run(input: String) -> String {
-        let target: HexPoint = input
+        let path: [HexPoint] = input
             .split(separator: ",")
             .map {
                 return switch $0 {
@@ -23,8 +23,14 @@ final class Day11: Day {
                     fatalError("Unknown direction \($0)")
                 }
             }
-            .reduce(HexPoint.zero, +)
         
-        return target.distance(to: .zero).description
+        var maxDistance = Int.min
+        var position = HexPoint.zero
+        for step in path {
+            position += step
+            maxDistance = max(maxDistance, position.distance(to: .zero))
+        }
+        
+        return maxDistance.description
     }
 }
