@@ -9,6 +9,23 @@ import Foundation
 
 final class Day14: Day {
     func run(input: String) -> String {
-        return ""
+        var used = 0
+        for line in 0 ..< 128 {
+            let hash = hash("\(input)-\(line)")
+                .map { UInt8(exactly: $0.hexDigitValue!)! }
+            for char in hash {
+                for column in 0 ..< 4 {
+                    if char & (1 << column) > 0 {
+                        used += 1
+                    }
+                }
+            }
+        }
+        
+        return used.description
+    }
+    
+    func hash(_ string: String) -> String {
+        return Day10().run(input: string)
     }
 }
