@@ -13,7 +13,9 @@ final class Day16Tests: XCTestCase {
     func testDay() throws {
         let input =
 """
+s1,x3/4,pe/b
 """
-        XCTAssertEqual(day.run(input: input), "")
+        day.dancers = ["a", "b", "c", "d", "e"]
+        XCTAssertEqual(day.run(input: input), "baedc")
     }
 }
