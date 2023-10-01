@@ -12,16 +12,23 @@ final class Day13: Day {
         let scanners = [Int: Int](uniqueKeysWithValues: input.lines.map { $0.allDigits }.map { ($0[0], $0[1]) })
         let maxDepth = scanners.keys.max()!
         
-        var severity = 0
-        for depth in 0 ... maxDepth {
-            guard let range = scanners[depth] else {
-                continue
+        for delay in 0 ... .max {
+            var found = false
+            for depth in 0 ... maxDepth {
+                guard let range = scanners[depth] else {
+                    continue
+                }
+                
+                if (depth + delay) % (2 * (range - 1)) == 0 {
+                    found = true
+                    break
+                }
             }
             
-            if depth % (2 * (range - 1)) == 0 {
-                severity += depth * range
+            if !found {
+                return delay.description
             }
         }
-        return severity.description
+        fatalError("No solution found")
     }
 }
