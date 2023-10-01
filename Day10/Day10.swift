@@ -33,7 +33,7 @@ final class Day10: Day {
         return loop
             .map { UInt8(exactly: $0)! }
             .chunks(ofCount: 16).map { chunk in chunk.reduce(0) { $0 ^ $1 } }
-            .map { String($0, radix: 16, uppercase: true) }
+            .map { String(format: "%02X", $0) }
             .joined()
     }
 }
