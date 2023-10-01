@@ -14,14 +14,22 @@ final class Day12: Day {
             return (numbers[0], Array(numbers.dropFirst()))
         })
         
-        var toExplore = Set([0])
-        var connected = Set<Int>()
-        while let next = toExplore.popFirst() {
-            connected.insert(next)
-            toExplore.formUnion(map[next,default: []])
-            toExplore.subtract(connected)
+        var allIds = Set(map.keys)
+        var sets = 0
+        
+        while let root = allIds.popFirst() {
+            sets += 1
+            var toExplore = Set([root])
+            var connected = Set<Int>()
+            
+            while let next = toExplore.popFirst() {
+                allIds.remove(next)
+                connected.insert(next)
+                toExplore.formUnion(map[next,default: []])
+                toExplore.subtract(connected)
+            }
         }
         
-        return connected.count.description
+        return sets.description
     }
 }
