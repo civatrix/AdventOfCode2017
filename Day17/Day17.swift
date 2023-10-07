@@ -10,15 +10,19 @@ import Foundation
 final class Day17: Day {
     func run(input: String) -> String {
         let steps = Int(input)!
-        var buffer = [0]
+        var size = 1
         var current = 0
+        var target = 0
         
-        for next in 1 ... 2017 {
-            let nextIndex = (current + steps) % buffer.count + 1
-            buffer.insert(next, at: nextIndex)
+        for next in 1 ... 50_000_000 {
+            let nextIndex = (current + steps) % size + 1
+            if nextIndex == 1 {
+                target = next
+            }
             current = nextIndex
+            size += 1
         }
         
-        return buffer[wrapped: current + 1].description
+        return target.description
     }
 }
