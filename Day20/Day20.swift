@@ -7,22 +7,12 @@
 
 import Foundation
 
-class Particle: Comparable {
+class Particle: Equatable {
     static func == (lhs: Particle, rhs: Particle) -> Bool {
-        (lhs.position == rhs.position) && (lhs.speed == rhs.speed) && (lhs.acceleration == rhs.acceleration)
+        lhs.position == rhs.position
     }
     
-    static func < (lhs: Particle, rhs: Particle) -> Bool {
-        (lhs.acceleration, lhs.speed, lhs.position) < (rhs.acceleration, rhs.speed, rhs.position)
-    }
-    
-    struct Vector: Comparable {
-        static func < (lhs: Vector, rhs: Vector) -> Bool {
-            (abs(lhs.x) + abs(lhs.y) + abs(lhs.z)) < (abs(rhs.x) + abs(rhs.y) + abs(rhs.z))
-        }
-        
-        static let zero = Vector(x: 0, y: 0, z: 0)
-        
+    struct Vector: Hashable {
         public static func += (left: inout Vector, right: Vector) {
             left = left + right
         }
@@ -31,19 +21,7 @@ class Particle: Comparable {
             Vector(x: left.x + right.x, y: left.y + right.y, z: left.z + right.z)
         }
         
-        public static func -= (left: inout Vector, right: Vector) {
-            left = left - right
-        }
-        
-        public static func - (left: Vector, right: Vector) -> Vector {
-            Vector(x: left.x - right.x, y: left.y - right.y, z: left.z - right.z)
-        }
-        
         let x, y, z: Int
-        
-        var normalized: Vector {
-            Vector(x: x.clamped(to: -1 ... 1), y: y.clamped(to: -1 ... 1), z: z.clamped(to: -1 ... 1))
-        }
     }
     
     init(_ numbers: [Int]) {
@@ -55,21 +33,34 @@ class Particle: Comparable {
     var position: Vector
     var speed: Vector
     let acceleration: Vector
-    var finished = false
     
     func update() {
         speed += acceleration
         position += speed
-        
-        finished = position.normalized == acceleration.normalized && position.normalized == speed.normalized
     }
 }
 
 final class Day20: Day {
     func run(input: String) -> String {
-        let particles = input.lines.map { Particle($0.allDigits) }
-                
-        let closest = particles.min()!
-        return particles.firstIndex(of: closest)!.description
+        var particles = input.lines.map { Particle($0.allDigits) }
+        
+        var countdown = 10_000
+        while true {
+            particles.forEach { $0.update() }
+            
+            let positions = particles.reduce(into: [Particle.Vector: Int]()) { $0[$1.position, default: 0] += 1 }
+            let collisions = Set(positions.filter { $0.value > 1 }.map { $0.key })
+            if collisions.count > 0 {
+                countdown = 10_000
+                particles = particles.filter { !collisions.contains($0.position) }
+            }
+            
+            countdown -= 1
+            if countdown == 0 {
+                break
+            }
+        }
+        
+        return particles.count.description
     }
 }
