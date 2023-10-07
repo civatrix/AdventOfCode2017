@@ -34,7 +34,7 @@ class ElfCode {
     }
     
     enum Instruction {
-        case copy(Substring, Substring), increment(Substring), decrement(Substring), jumpNonZero(Substring, Substring), toggle(Substring), output(Substring)
+        case set(Substring, Substring), add(Substring, Substring), multiply(Substring, Substring), modulo(Substring, Substring), jumpGreaterZero(Substring, Substring), recover(Substring), sound(Substring)
         
         init(_ input: String) {
             guard let match = input.wholeMatch(of: regex)?.output else {
@@ -42,21 +42,23 @@ class ElfCode {
             }
             let instruction = match.1
             switch instruction {
-            case "cpy": self = .copy(match.2, match.3!)
-            case "inc": self = .increment(match.2)
-            case "dec": self = .decrement(match.2)
-            case "jnz": self = .jumpNonZero(match.2, match.3!)
-            case "tgl": self = .toggle(match.2)
-            case "out": self = .output(match.2)
+            case "snd": self = .sound(match.2)
+            case "set": self = .set(match.2, match.3!)
+            case "add": self = .add(match.2, match.3!)
+            case "mul": self = .multiply(match.2, match.3!)
+            case "mod": self = .modulo(match.2, match.3!)
+            case "rcv": self = .recover(match.2)
+            case "jgz": self = .jumpGreaterZero(match.2, match.3!)
             default:
                 fatalError("Unknown instruction: \(input)")
             }
         }
     }
     
-    var registers: [Substring: Int] = ["a": 1, "b": 0, "c": 0, "d": 0]
+    var registers: [Substring: Int] = [:]
     var instructions: [Instruction]
     var instructionPointer = 0
+    var sound = ""
     var output = ""
     
     init(_ lines: [String]) {
@@ -71,39 +73,29 @@ class ElfCode {
     func step() -> Bool {
         let instruction = instructions[instructionPointer]
         switch instruction {
-        case let .copy(lhs, rhs):
-            if let number = Int(lhs) {
-                registers[rhs] = number
+        case let .set(lhs, rhs):
+            if let number = Int(rhs) {
+                registers[lhs] = number
             } else {
-                registers[rhs] = registers[lhs]!
+                registers[lhs] = registers[rhs]!
             }
-        case let .increment(register):
-            registers[register]! += 1
-        case let .decrement(register):
-            registers[register]! -= 1
-        case let .jumpNonZero(register, value):
-            if (Int(register) ?? registers[register])! != 0, let offset = Int(value) ?? registers[value] {
+        case let .add(lhs, rhs):
+            registers[lhs, default: 0] += Int(rhs) ?? registers[rhs]!
+        case let .multiply(lhs, rhs):
+            registers[lhs, default: 0] *= Int(rhs) ?? registers[rhs]!
+        case let .modulo(lhs, rhs):
+            registers[lhs, default: 0] %= Int(rhs) ?? registers[rhs]!
+        case let .jumpGreaterZero(register, value):
+            if (Int(register) ?? registers[register])! > 0, let offset = Int(value) ?? registers[value] {
                 instructionPointer += offset - 1
             }
-        case let .toggle(register):
-            let offset = registers[register]!
-            guard let target = instructions[safe: instructionPointer + offset] else { break }
-            switch target {
-            case let .copy(lhs, rhs):
-                instructions[instructionPointer + offset] = .jumpNonZero(lhs, rhs)
-            case let .increment(rhs):
-                instructions[instructionPointer + offset] = .decrement(rhs)
-            case let .decrement(rhs):
-                instructions[instructionPointer + offset] = .increment(rhs)
-            case let .jumpNonZero(lhs, rhs):
-                instructions[instructionPointer + offset] = .copy(lhs, rhs)
-            case let .toggle(rhs):
-                instructions[instructionPointer + offset] = .increment(rhs)
-            case let .output(rhs):
-                instructions[instructionPointer + offset] = .increment(rhs)
+        case let .sound(register):
+            sound = "\((Int(register) ?? registers[register])!)"
+        case let .recover(register):
+            if (Int(register) ?? registers[register])! != 0 {
+                output = sound
+                return false
             }
-            case let .output(register):
-            output += "\((Int(register) ?? registers[register])!)"
         }
         
         instructionPointer += 1

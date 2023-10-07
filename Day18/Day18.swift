@@ -9,6 +9,9 @@ import Foundation
 
 final class Day18: Day {
     func run(input: String) -> String {
-        return ""
+        let elfCode = ElfCode(input.lines)
+        
+        while elfCode.step() { }
+        return elfCode.output
     }
 }
