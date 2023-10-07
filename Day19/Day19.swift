@@ -13,12 +13,11 @@ final class Day19: Day {
         var position = Point(x: grid[0].firstIndex(of: "|")!, y: 0)
         var direction = Point.down
         
-        var output = ""
+        var output = 0
         
         while true {
+            output += 1
             switch position.value(in: grid) {
-            case "-", "|":
-                position += direction
             case "+":
                 let nextPosition = position.adjacent
                     .filter { $0 != position - direction }
@@ -28,9 +27,8 @@ final class Day19: Day {
                 direction = nextPosition - position
                 position = nextPosition
             case " ", nil:
-                return output
+                return (output - 1).description
             default:
-                output.append(position.value(in: grid)!)
                 position += direction
             }
         }
