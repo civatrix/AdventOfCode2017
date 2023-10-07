@@ -9,9 +9,27 @@ import Foundation
 
 final class Day18: Day {
     func run(input: String) -> String {
-        let elfCode = ElfCode(input.lines)
+        let bot0 = ElfCode(input.lines)
+        let bot1 = ElfCode(input.lines)
+        bot1.registers["p"] = 1
         
-        while elfCode.step() { }
-        return elfCode.output
+        var deadlocked = false
+        while !deadlocked {
+            deadlocked = true
+            while bot0.step() {
+                deadlocked = false
+                if let output = bot0.output {
+                    bot1.input.append(output)
+                }
+            }
+            while bot1.step() {
+                deadlocked = false
+                if let output = bot1.output {
+                    bot0.input.append(output)
+                }
+            }
+        }
+        
+        return bot1.timesSent.description
     }
 }

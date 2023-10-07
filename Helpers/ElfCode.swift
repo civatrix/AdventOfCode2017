@@ -34,7 +34,7 @@ class ElfCode {
     }
     
     enum Instruction {
-        case set(Substring, Substring), add(Substring, Substring), multiply(Substring, Substring), modulo(Substring, Substring), jumpGreaterZero(Substring, Substring), recover(Substring), sound(Substring)
+        case set(Substring, Substring), add(Substring, Substring), multiply(Substring, Substring), modulo(Substring, Substring), jumpGreaterZero(Substring, Substring), recover(Substring), send(Substring)
         
         init(_ input: String) {
             guard let match = input.wholeMatch(of: regex)?.output else {
@@ -42,7 +42,7 @@ class ElfCode {
             }
             let instruction = match.1
             switch instruction {
-            case "snd": self = .sound(match.2)
+            case "snd": self = .send(match.2)
             case "set": self = .set(match.2, match.3!)
             case "add": self = .add(match.2, match.3!)
             case "mul": self = .multiply(match.2, match.3!)
@@ -58,19 +58,16 @@ class ElfCode {
     var registers: [Substring: Int] = [:]
     var instructions: [Instruction]
     var instructionPointer = 0
-    var sound = ""
-    var output = ""
+    var input = [Int]()
+    var output: Int?
+    var timesSent = 0
     
     init(_ lines: [String]) {
         instructions = lines.map(Instruction.init)
     }
     
-    func run() -> Int {
-        while step() {}
-        return registers["a"]!
-    }
-    
     func step() -> Bool {
+        output = nil
         let instruction = instructions[instructionPointer]
         switch instruction {
         case let .set(lhs, rhs):
@@ -89,11 +86,14 @@ class ElfCode {
             if (Int(register) ?? registers[register])! > 0, let offset = Int(value) ?? registers[value] {
                 instructionPointer += offset - 1
             }
-        case let .sound(register):
-            sound = "\((Int(register) ?? registers[register])!)"
+        case let .send(register):
+            output = Int(register) ?? registers[register]
+            timesSent += 1
         case let .recover(register):
-            if (Int(register) ?? registers[register])! != 0 {
-                output = sound
+            if let next = input.first {
+                registers[register] = next
+                input.removeFirst()
+            } else {
                 return false
             }
         }
