@@ -13,17 +13,16 @@ struct Rule: Hashable {
 }
 
 final class Day21: Day {
-    var iterations = 5
+    var iterations = 18
+    var rules = [Rule: Set<Point>]()
     
     func run(input: String) -> String {
-        var grid =
+        let grid =
 """
 .#.
 ..#
 ###
 """.parseGrid()
-        
-        var rules = [Rule: Set<Point>]()
         
         for rule in input.lines {
             let string = rule.replacing("/", with: "\n").split(separator: " => ")
@@ -58,9 +57,30 @@ final class Day21: Day {
             rules[Rule(rule: lhs.mirrorVertically(size).mirrorHorizontally(size).rotateClockwise(size).rotateClockwise(size), size: size)] = rhs
         }
         
+        var total = [grid: 1]
+        for _ in 0 ..< iterations / 3 {
+            let temp = total
+            total = [:]
+            for seed in temp {
+                for (key, value) in iterate(seed.key) {
+                    total[key, default: 0] += value * seed.value
+                }
+            }
+        }
+        
+        return total.map { $0.key.count * $0.value }.sum.description
+    }
+    
+    var cache = [Set<Point>: [Set<Point>: Int]]()
+    func iterate(_ seed: Set<Point>) -> [Set<Point>: Int] {
+        if let cacheHit = cache[seed] {
+            return cacheHit
+        }
+        
+        var grid = seed
         var gridSize = 3
         var elementSize = 3
-        for _ in 0 ..< iterations {
+        for _ in 0 ..< 3 {
             var newGrid = Set<Point>()
             for xOffset in (0 ..< gridSize).striding(by: elementSize) {
                 for yOffset in (0 ..< gridSize).striding(by: elementSize) {
@@ -79,7 +99,18 @@ final class Day21: Day {
             elementSize = gridSize.isMultiple(of: 2) ? 2 : 3
         }
         
-        return grid.count.description
+        var output = [Set<Point>: Int]()
+        for xOffset in (0 ..< 9).striding(by: 3) {
+            for yOffset in (0 ..< 9).striding(by: 3) {
+                let partialGrid = grid
+                    .filter { (xOffset ..< xOffset + elementSize).contains($0.x) && (yOffset ..< yOffset + elementSize).contains($0.y) } // Get points in the current section
+                    .map { Point(x: $0.x - xOffset, y: $0.y - yOffset) } // Remap them so they match our rules dictionary
+                output[Set(partialGrid), default: 0] += 1
+            }
+        }
+        
+        cache[seed] = output
+        return output
     }
 }
 
