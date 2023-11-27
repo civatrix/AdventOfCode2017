@@ -104,15 +104,17 @@ public struct Point: Hashable, CustomStringConvertible, Comparable, Equatable, E
 extension Set where Element == Point {
     func printPoints(current: Point? = nil, path: [Point] = []) {
         var string = ""
-        for y in map({ $0.y }).min()! - 1 ... map({ $0.y }).max()! + 1 {
-            for x in map({ $0.x }).min()! - 1 ... map({ $0.x }).max()! + 1 {
+        let xRange = map { $0.x }.minAndMax()!
+        let yRange = map { $0.y }.minAndMax()!
+        for y in yRange.min - 1 ... yRange.max + 1 {
+            for x in xRange.min - 1 ... xRange.max + 1 {
                 let point = Point(x: x, y: y)
-                if contains(point) {
-                    string += "#"
+                if let current = current, point == current {
+                    string += "D"
                 } else if let index = path.firstIndex(of: point) {
                     string += "\(index % 10)"
-                } else if let current = current, point == current {
-                    string += "D"
+                } else if contains(point) {
+                    string += "#"
                 } else {
                     string += "."
                 }
@@ -134,6 +136,19 @@ extension Set where Element == Point {
             }
             mutable.formUnion(deadEnds)
         }
+    }
+}
+
+extension StringProtocol {
+    func parseGrid() -> Set<Point> {
+        var grid = Set<Point>()
+        for (y, line) in lines.enumerated() {
+            for (x, cell) in line.enumerated() where cell == "#" {
+                grid.insert([x, y])
+            }
+        }
+        
+        return grid
     }
 }
 
